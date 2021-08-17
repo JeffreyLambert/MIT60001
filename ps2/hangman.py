@@ -26,7 +26,7 @@ def load_words():
     line = inFile.readline()
     # wordlist: list of strings
     wordlist = line.split()
-    print("  ", len(wordlist), "words loaded.")
+    print("  ", len(wordlist), "words loaded.\n")
     return wordlist
 
 
@@ -163,7 +163,7 @@ def hangman(secret_word):
             break
 
     if not is_word_guessed(secret_word, letters_guessed):
-        print(f'Sorry, you ran out of guess.  The word was {secret_word}')
+        print(f'Sorry, you ran out of guesses.  The word was {secret_word}')
 
 
 
@@ -188,8 +188,10 @@ def match_with_gaps(my_word, other_word):
         False otherwise: 
     '''
     # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
-
+    if len(my_word) == len(other_word):
+        return all(guess_letter in [secret_word_letter, '_'] for secret_word_letter, guess_letter in zip(other_word, my_word))
+    else:
+        return False
 
 
 def show_possible_matches(my_word):
@@ -203,8 +205,9 @@ def show_possible_matches(my_word):
 
     '''
     # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
-
+    possible_matches = [word for word in wordlist if match_with_gaps(my_word, word)]
+    print(*possible_matches)
+    print("")
 
 
 def hangman_with_hints(secret_word):
@@ -235,7 +238,60 @@ def hangman_with_hints(secret_word):
     Follows the other limitations detailed in the problem write-up.
     '''
     # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+    print("Welcome to the game Hangman!")
+    print(f"I am thinking of a word that is {len(secret_word)} letters long.")
+    print('-' * 20 + '\n')
+
+    warnings_left = 3
+    guesses_left = 6
+    letters_guessed = list()
+    while guesses_left > 0:
+        print(f"You have {guesses_left} guesses left.")
+        print(f"Available letters \n")
+        print(get_available_letters(letters_guessed) + "\n")
+
+        guess = input("Guess a letter: ")
+
+        while warnings_left > 0:
+            if guess == '*':
+                guessed_word = get_guessed_word(secret_word, letters_guessed)
+                show_possible_matches(guessed_word)
+                guess = input("Please guess a letter: ")
+            elif not guess.isalpha():
+                warnings_left -= 1
+                guess = input(f"Invalid guess!  You have {warnings_left} warnings left. Please guess a letter: ")
+            elif len(guess) != 1:
+                warnings_left -= 1
+                guess = input(
+                    f"That's not a single letter!  You have {warnings_left} warnings left. Please guess a single letter: ")
+            elif guess in letters_guessed:
+                warnings_left -= 1
+                guess = input(
+                    f"You've already guessed that letter!  You have {warnings_left} warnings left. Please guess a letter: ")
+            else:
+                break
+
+        letters_guessed.append(guess.lower())
+
+        if guess in secret_word:
+            print(f"Good guess: {get_guessed_word(secret_word, letters_guessed)}")
+        else:
+            print(f"Oop! That letter is not in my word: {get_guessed_word(secret_word, letters_guessed)}")
+            if guess in 'aeiou':
+                guesses_left -= 2
+            else:
+                guesses_left -= 1
+
+        print('-' * 20 + '\n')
+
+        if is_word_guessed(secret_word, letters_guessed):
+            total_score = guesses_left * len(set(secret_word))
+            print(f"Congratulations!  You've won!")
+            print(f"Your total score for this game is : {total_score}")
+            break
+
+    if not is_word_guessed(secret_word, letters_guessed):
+        print(f'Sorry, you ran out of guesses.  The word was {secret_word}')
 
 
 
@@ -252,13 +308,12 @@ if __name__ == "__main__":
     # uncomment the following two lines.
     
     #secret_word = choose_word(wordlist)
-    secret_word = 'dolphin'
-    hangman(secret_word)
+    #hangman(secret_word)
 
 ###############
     
     # To test part 3 re-comment out the above lines and 
     # uncomment the following two lines. 
     
-    #secret_word = choose_word(wordlist)
-    #hangman_with_hints(secret_word)
+    secret_word = choose_word(wordlist)
+    hangman_with_hints(secret_word)
