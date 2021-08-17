@@ -2,5 +2,8 @@
 .DS_Store
 .idea/
 
+# PyCache
+ps0/__pycache__
+
 # Ignore temporary development files
 sandbox.py
