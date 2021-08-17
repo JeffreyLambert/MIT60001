@@ -1,0 +1,6 @@
+# Ignore IDE Files
+.DS_Store
+.idea/
+
+# Ignore temporary development files
+sandbox.py
