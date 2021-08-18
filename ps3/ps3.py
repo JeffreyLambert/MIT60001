@@ -176,8 +176,18 @@ def update_hand(hand, word):
     hand: dictionary (string -> int)    
     returns: dictionary (string -> int)
     """
+    my_hand = hand.copy()
 
-    pass  # TO DO... Remove this line when you implement this function
+    # For each letter in word
+    for letter in word.lower():
+        # If only 1 letter exists, remove the element from dict
+        if my_hand.get(letter) == 1:
+            my_hand.pop(letter)
+        # Else reduce the count of that letter in hand by 1
+        else:
+            my_hand[letter] = max(my_hand.get(letter, 0) - 1, 0)
+
+    return my_hand
 
 
 #
